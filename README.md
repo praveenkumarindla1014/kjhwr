@@ -9,7 +9,7 @@ Scope (from the brief): national-level wind **actuals** (Elexon `FUELHH`, `fuelT
 
 | | |
 |---|---|
-| **Live app** | _Not deployed yet. Add the URL here after deployment (see [Deployment](#deployment))._ |
+| **Live app** | **https://kjhwr-livid.vercel.app** (Vercel: FastAPI backend + React frontend; API health: [/api/health](https://kjhwr-livid.vercel.app/api/health), API docs: [/docs](https://kjhwr-livid.vercel.app/docs)) |
 | **Demo video** | _Add the unlisted YouTube link here._ |
 
 ---
