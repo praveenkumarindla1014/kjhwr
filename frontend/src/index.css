@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-slate-200 bg-white shadow-card;
+  }
+  .input {
+    @apply h-9 rounded-lg border border-slate-300 bg-white px-2.5 text-sm text-slate-800 shadow-sm
+      transition-colors focus:border-forecast focus:outline-none focus:ring-2 focus:ring-forecast/20
+      disabled:cursor-not-allowed disabled:bg-slate-100;
+  }
+  .btn {
+    @apply inline-flex h-9 items-center justify-center gap-2 rounded-lg px-3 text-sm font-medium transition-colors
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forecast/40 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply btn bg-forecast text-white hover:bg-[#256abf];
+  }
+  .btn-secondary {
+    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
