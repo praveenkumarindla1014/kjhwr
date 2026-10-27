@@ -1,2 +1,0 @@
-# Used by Vercel's Python runtime (api/index.py). Same dependencies as the backend.
--r backend/requirements.txt

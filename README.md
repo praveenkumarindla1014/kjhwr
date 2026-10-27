@@ -97,7 +97,7 @@ Day-ahead power is bought the day before delivery. To decide how much non-renewa
 | Decisions in January 2026 only | Date range locked to Jan 2026 in backend and UI |
 | React frontend, Python backend | React + Vite, FastAPI |
 | Docker | `docker-compose.yml` and root `Dockerfile` |
-| Deploy to Vercel or Heroku | `heroku.yml` + `Dockerfile` (Heroku), `vercel.json` + `api/index.py` (Vercel) |
+| Deploy to Vercel or Heroku | `heroku.yml` + `Dockerfile` (Heroku), `vercel.json` Services config (Vercel) |
 | README with files, how to start, link to deployed app | This file |
 
 ## Features
@@ -212,11 +212,9 @@ The backend also reports MAE as a percentage of mean actual generation, median, 
 │   │   └── test/                    Vitest + RTL tests (SYNTHETIC fixtures)
 │   ├── nginx.conf, Dockerfile       Frontend image for docker-compose (nginx, proxies /api)
 │   └── vite.config.js, tailwind.config.js
-├── api/index.py                     Vercel serverless entry (imports the FastAPI app)
-├── vercel.json, .vercelignore       Vercel configuration
+├── vercel.json, .vercelignore       Vercel configuration (backend + frontend as two services)
 ├── Dockerfile, heroku.yml           Single-container build for Heroku / any Docker host
 ├── docker-compose.yml               Local two-container stack (nginx + FastAPI)
-├── requirements.txt                 Vercel Python dependencies (points to backend/)
 ├── .env.example                     All configuration variables
 ├── TESTING_AND_DEMO_GUIDE.md        How to test against the brief and script the demo video
 └── README.md
@@ -337,24 +335,27 @@ Notes:
 - The committed snapshot in `backend/data/` is loaded on boot, so the dashboard has real data immediately.
 - Heroku's filesystem is ephemeral: **Refresh data** works but is lost when the dyno restarts (about once a day), after which the bundled snapshot is used again.
 
-### Option 2: Vercel
+### Option 2: Vercel (backend and frontend as two services in one project)
 
-`vercel.json` builds the React app as a static site and routes `/api/*` to `api/index.py`, which exposes the same FastAPI app as a Python serverless function.
+`vercel.json` uses [Vercel Services](https://vercel.com/docs/services): the FastAPI backend (`backend/`) and the Vite frontend (`frontend/`) are built separately but deployed as one project on one domain. Requests to `/api/*` (and `/docs`) go to the backend; everything else goes to the frontend. A service receives the original request path, so the backend routes (`/api/health`, ...) work unchanged, and the frontend calls `/api` on the same origin (no CORS or environment variables needed).
 
+**Dashboard (recommended)**
+1. Sign in at https://vercel.com with GitHub.
+2. **Add New > Project**, import this repository.
+3. Vercel detects the two services from `vercel.json`. Keep the defaults and click **Deploy**.
+4. Open `https://<your-url>/api/health`, then the dashboard.
+
+**CLI**
 ```bash
-npm i -g vercel
-vercel login
-vercel                 # preview deployment, run from the repo root
-vercel --prod          # production deployment
+npx vercel login
+npx vercel --prod          # run from the repo root
 ```
 
-Or import the GitHub repo in the Vercel dashboard and keep the defaults (the settings come from `vercel.json`).
-
 Notes:
-- This configuration could not be test-deployed in my environment (it needs your Vercel account), so check the preview URL before relying on it. Open `/api/health`, then the dashboard.
-- The Python function bundles `backend/app` and `backend/data`. If the build fails on bundle size, use Heroku instead.
+- The bundled snapshot in `backend/data/` is read on boot, so the dashboard has real data immediately.
 - The function's filesystem is read-only; **Refresh data** writes to a temp directory that is per-instance and short-lived. The bundled snapshot is always the baseline.
-- `maxDuration` is set to 60 s because a full refresh makes several Elexon calls. Lower it if your plan does not allow it.
+- If Vercel shows a login page on the deployment URL, turn off **Deployment Protection > Vercel Authentication** in the project settings.
+- Services is a Vercel beta feature. If it is unavailable for your account, use Option 1 (Heroku).
 
 ### Pre-deployment checklist
 
@@ -390,7 +391,7 @@ If you use the GitHub CLI: `gh repo create <anonymous-name> --public --source . 
 - Only national wind is in scope: no regional breakdown, other renewables, or embedded/solar generation.
 - The analysis period is fixed by configuration (January 2026). Other months need `ANALYSIS_START`/`ANALYSIS_END` and a refresh.
 - The snapshot cache is a local JSON file. That is fine for a single instance but would need shared storage to scale out; on serverless or ephemeral hosts a refresh does not survive restarts.
-- The Vercel configuration has not been deployed or tested by the author; the Heroku/Docker image has been built and run locally.
+- The Heroku/Docker image has been built and run locally; the Vercel Services configuration depends on a Vercel beta feature.
 - No authentication (it is an internal pilot tool).
 
 ## AI tools disclosure
