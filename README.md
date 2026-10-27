@@ -383,16 +383,6 @@ git push -u origin main
 
 If you use the GitHub CLI: `gh repo create <anonymous-name> --public --source . --push`.
 
-Then use a private/incognito window to confirm the repo, the live app, and the video are all reachable without logging in.
-
-### Submission checklist (from the brief)
-
-- [ ] Public GitHub repo with an anonymous name, containing this README (files, how to start, live link)
-- [ ] App deployed on Vercel or Heroku, link added to this README
-- [ ] Unlisted YouTube video (max 10 min): Part 1 customer pitch (max 5 min), Part 2 technical review (max 5 min)
-- [ ] Every submitted URL opened in incognito and working
-- [ ] Details submitted in the form linked in the brief
-
 ## Known limitations
 
 - `WINDFOR` is hourly, so half-past intervals are not evaluated. The app does not interpolate forecasts.
